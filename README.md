@@ -1,4 +1,4 @@
-# -Sprint-4.2.NodeREST-DB-JWT
+# Sprint-4.2.NodeREST-DB-JWT
 
 https://github.com/sequelize/express-example
 
