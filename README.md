@@ -16,6 +16,13 @@ El software ha de respectar els principals patrons de disseny.
 Has de tenir en compte els següents detalls de construcció:
 
 POST /players: crea un jugador
+
+S'ha d'introduïr els camps name i password. La data de registre es genera automaticament.
+Possibles errors:
+- falta un camp
+- password massa curt (mínim 7 caracters)
+- el nom d'usuari està repetit (ha de ser únic)
+- 
 PUT /players: modifica el nom del jugador
 POST /players/{id}/games: un jugador específic realitza una tirada
 DELETE /players/{id}/games: elimina les tirades del jugador
@@ -33,3 +40,5 @@ Persistència: utilitza MongoDB (amb Mongoose) com a base de dades.
 
 Nivell 3
 Afegix un endpoint /login que permeti accedir a un administrador amb usuari i contrasenya i retorni un token i fes obligatòria l'autentificació per JWT en tots els accessos a les URL del microservei, utilitzant middlewares per validar al token.
+
+Notes: de moment, no usuari anònim (no es poden validar)

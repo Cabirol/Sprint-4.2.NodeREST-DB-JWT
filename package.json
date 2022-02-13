@@ -1,0 +1,28 @@
+{
+  "name": "sprint-4.2.noderest-db-jwt",
+  "version": "1.0.0",
+  "description": "https://github.com/sequelize/express-example",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cabirol/Sprint-4.2.NodeREST-DB-JWT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cabirol/Sprint-4.2.NodeREST-DB-JWT/issues"
+  },
+  "homepage": "https://github.com/Cabirol/Sprint-4.2.NodeREST-DB-JWT#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "mongoose": "^6.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
