@@ -25,14 +25,6 @@ const gameSchema = new mongoose.Schema({
     }
 });
 
-gameSchema.methods.generateDice = async function(){
-    const game = this;
-    const dateTime = [];
-    game.regDate = dateTime;
-    await game.save();
-    return dateTime;
-}
-
 const Game = mongoose.model('Game', gameSchema);
 
 module.exports = Game;
