@@ -15,17 +15,28 @@ No es pot eliminar una partida en concret, però si que es pot eliminar tot el l
 El software ha de respectar els principals patrons de disseny.
 Has de tenir en compte els següents detalls de construcció:
 
-POST /players: crea un jugador
+## POST /players: crea un jugador
 
 S'ha d'introduïr els camps name i password. La data de registre es genera automaticament.
 Possibles errors:
 - falta un camp
 - password massa curt (mínim 7 caracters)
 - el nom d'usuari està repetit (ha de ser únic)
-- 
-PUT /players: modifica el nom del jugador
-POST /players/{id}/games: un jugador específic realitza una tirada
-DELETE /players/{id}/games: elimina les tirades del jugador
+- password conté la cadena password
+
+## PUT /players/:id modifica el nom del jugador
+
+Busca user a la base de dades per id. Només accepta els camps que li donis (en aquest cas només name)
+Possibles errors:
+- se li ha enviat un altre camp
+
+## POST /players/{id}/games: un jugador específic realitza una tirada
+
+Guarda dos daus amb un camp owner (l'id del jugador). S'ha d'introduïr l'id d'un jugador.
+
+## DELETE /players/{id}/games: elimina les tirades del jugador
+
+
 GET /players: retorna el llistat de tots els jugadors del sistema amb el seu percentatge mig d’èxits
 GET /players/{id}/games: retorna el llistat de jugades per un jugador.
 GET /players/ranking: retorna el percentatge mig d’èxits del conjunt de tots els jugadors
@@ -41,4 +52,7 @@ Persistència: utilitza MongoDB (amb Mongoose) com a base de dades.
 Nivell 3
 Afegix un endpoint /login que permeti accedir a un administrador amb usuari i contrasenya i retorni un token i fes obligatòria l'autentificació per JWT en tots els accessos a les URL del microservei, utilitzant middlewares per validar al token.
 
-Notes: de moment, no usuari anònim (no es poden validar)
+Notes: 
+- de moment, no usuari anònim (no es poden validar)
+- put/players (modificar nom) hauria de ser put/players/:id
+
