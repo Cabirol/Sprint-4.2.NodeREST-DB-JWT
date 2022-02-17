@@ -3,6 +3,14 @@ const User = require('../models/user.js');
 const Game = require('../models/game.js');
 const dateNow = require('../utils/date.js');
 
+const {
+    findUserByName,
+    findUserById,
+    filterUserByName,
+    newUserInstance,
+    saveUser
+} = require('../services/mongoservices.js');
+
 const router = new express.Router();
 
 
@@ -18,15 +26,17 @@ router.post('/players', async (req, res)=>{
         if(!req.body.name || req.body.name === 'anon'){
             req.body.name = 'anon';
         }else{
-            const existingUser = await User.findOne({name:req.body.name});
+            //const existingUser = await User.findOne({name:req.body.name});
+            const existingUser = await findUserByName(req.body.name);
             if (existingUser){
                 return res.status(400).send({error: 'name already taken'});
             }
         }
-        console.log(req.body.name);
-        const newUser = new User({name: req.body.name, regDate: dateNow()});
-        console.log(newUser);
-        await newUser.save();
+        
+        //const newUser = new User({name: req.body.name, regDate: dateNow()});
+        const newUser = newUserInstance(req.body.name, dateNow());
+        //await newUser.save();
+        await saveUser(newUser);
         res.status(201).send(newUser);
     }catch(e){
         res.status(400).send(e);
@@ -50,19 +60,21 @@ router.put('/players', async (req, res)=>{
         return res.status(400).send({error: 'invalid updates'});
     }
     if(!req.body.name || !req.body._id || req.body.name === 'anon'){
-        return res.status(400).send({error: 'missing name or id'});
+        return res.status(400).send({error: 'missing name or _id'});
     }
     try{
-        const user = await User.findOne({_id:req.body._id});
+        //const user = await User.findOne({_id:req.body._id});
+        const user = await findUserById(req.body._id);
         if (!user) {
             return res.status(404).send({error: 'no user found'});
         }
-        const existingUser = await User.findOne({name:req.body.name, _id: { $ne: req.body._id }});
+        //const existingUser = await User.findOne({name:req.body.name, _id: { $ne: req.body._id }});
+        const existingUser = await filterUserByName(req.body.name, req.body._id);
         if (existingUser){
             return res.status(400).send({error: 'name already taken'});
         }
         user.name = req.body.name;
-        await user.save();
+        await saveUser(user);
         res.send(user);
     }catch(e){
         res.status(400).send(e);

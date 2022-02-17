@@ -4,7 +4,7 @@ module.exports = model;
 
 function model(sequelize) {
     const attributes = {
-        id: {
+        _id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
