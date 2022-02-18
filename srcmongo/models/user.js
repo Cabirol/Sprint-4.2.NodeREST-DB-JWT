@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
 userSchema.virtual('games',{
     ref: 'Game',
     localField: '_id',
-    foreignField: 'owner'
+    foreignField: 'UserId'
 });
 
 const User = mongoose.model('User', userSchema);

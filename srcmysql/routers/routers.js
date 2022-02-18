@@ -1,6 +1,8 @@
 const express = require('express');
+const {Op} = require('sequelize');
 
 const db = require('../db/mysql.js');
+
 
 const dateNow = require('../utils/date.js');
 
@@ -19,14 +21,12 @@ router.post('/players', async (req, res)=>{
         if(!req.body.name || req.body.name === 'anon'){
             req.body.name = 'anon';
         }else{
-            const existingUser = await User.findOne({name:req.body.name});
+            const existingUser = await db.User.findOne({where: {name: req.body.name} });
             if (existingUser){
                 return res.status(400).send({error: 'name already taken'});
             }
         }
-        console.log(req.body.name);
-        const newUser = new User({name: req.body.name, regDate: dateNow()});
-        console.log(newUser);
+        const newUser = db.User.build({name: req.body.name, regDate: dateNow()});
         await newUser.save();
         res.status(201).send(newUser);
     }catch(e){
@@ -60,11 +60,13 @@ router.put('/players', async (req, res)=>{
         return res.status(400).send({error: 'missing name or id'});
     }
     try{
-        const user = await User.findOne({_id:req.body._id});
+        const user = await db.User.findOne({where: {_id:req.body._id}});
+        console.log(user);
+
         if (!user) {
             return res.status(404).send({error: 'no user found'});
         }
-        const existingUser = await User.findOne({name:req.body.name, _id: { $ne: req.body._id }});
+        const existingUser = await db.User.findOne({where:{name:req.body.name, [Op.not]: { _id: req.body._id }}});
         if (existingUser){
             return res.status(400).send({error: 'name already taken'});
         }
@@ -78,13 +80,13 @@ router.put('/players', async (req, res)=>{
 });
 
 router.post('/players/:id/games', async (req, res)=>{
-    const game = new Game({
+    const game = db.Game.build({
         die1: Math.floor(Math.random() * 6) + 1,
         die2: Math.floor(Math.random() * 6) + 1,
-        owner: req.params.id
+        UserId: req.params.id
     });
     try{
-        const user = await User.findOne({_id:req.params.id});
+        const user = await db.User.findOne({where: {_id:req.params.id}});
         if (!user) {
             return res.status(404).send({error: 'no user found'});
         }
@@ -98,12 +100,12 @@ router.post('/players/:id/games', async (req, res)=>{
 
 router.delete('/players/:id/games', async (req, res)=>{
     try{
-        const user = await User.findOne({_id:req.params.id});
+        const user = await db.User.findOne({where: {_id:req.params.id}});
         if (!user) {
             return res.status(404).send({error: 'no user found'});
         }
-        const deleted = await Game.deleteMany({owner: req.params.id});
-        res.send(deleted);
+        const deleted = await db.Game.destroy({where: {UserId: req.params.id}});
+        res.json(deleted);
     }catch(e){
         res.status(500).send(e);
     }
@@ -119,7 +121,7 @@ router.get('/players', async (req, res)=>{
         }
         const ratios = [];
         for (const user of users){
-            const games = await Game.find({ owner: user._id });
+            const games = await Game.find({ UserId: user._id });
             if (games.length === 0) {
                 ratios.push({_id:user._id, name:user.name, ratioWin:"No games played"});
             } else {
@@ -150,7 +152,7 @@ try{
         if (!user) {
             return res.status(404).send({error: 'no user found'});
         }
-    const games = await Game.find({owner: req.params.id});
+    const games = await Game.find({UserId: req.params.id});
     res.status(201).send(games);
 }catch(e){
     res.status(500).send(e);
@@ -193,7 +195,7 @@ router.get('/players/ranking/loser', async (req, res)=>{
         let ratios = [];
         let min = 100;
         for (const user of users){
-            const games = await Game.find({ owner: user._id });
+            const games = await Game.find({ UserId: user._id });
             if (games.length !== 0) {
                 const turnoutsUser = [];
                 games.forEach((game)=>{
@@ -234,7 +236,7 @@ router.get('/players/ranking/winner', async (req, res)=>{
         let ratios = [];
         let max = 0;
         for (const user of users){
-            const games = await Game.find({ owner: user._id });
+            const games = await Game.find({ UserId: user._id });
             if (games.length !== 0) {
                 const turnoutsUser = [];
                 games.forEach((game)=>{

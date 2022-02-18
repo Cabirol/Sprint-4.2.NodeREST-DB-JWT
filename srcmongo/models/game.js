@@ -18,7 +18,7 @@ const gameSchema = new mongoose.Schema({
         }
     },
     
-    owner: {
+    UserId: {
         type: mongoose.Schema.Types.ObjectId,
         require: true,
         ref: 'User'
