@@ -1,6 +1,23 @@
 # Sprint-4.2.NodeREST-DB-JWT
 
-https://github.com/sequelize/express-example
+## Instruccions 
+
+"scripts": {
+    "mongoDev": "set NODE_ENV=mongo && nodemon src/index.js",
+    "mysqlDev": "set NODE_ENV=mysql && nodemon src/index.js",
+    "mongoStart": "set NODE_ENV=mongo && node src/index.js",
+    "mysqlStart": "set NODE_ENV= mysql && node src/index.js"
+}
+
+const config = {
+    user:"root",
+    password:"",
+    database:"jocdauscabirol",
+    host:"localhost",
+    port: 3306
+}
+
+## Enunciat i comentaris sobre els endpoints.
 
 Construirem una API que doni suport a un joc de daus ;)
 

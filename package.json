@@ -4,9 +4,10 @@
   "description": "https://github.com/sequelize/express-example",
   "main": "index.js",
   "scripts": {
-    "devmysql": "nodemon srcmysql/index.js",
-    "devmongo": "nodemon srcmongo/index.js",
-    "mongo": "node srcmongo/index.js"
+    "mongoDev": "set NODE_ENV=mongo && nodemon src/index.js",
+    "mysqlDev": "nodemon src/index.js",
+    "mongoStart": "set NODE_ENV=mongo && node src/index.js",
+    "mysqlStart": "node src/index.js"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,8 @@
 const express = require('express');
-require('./db/mongoose.js');
+
+if(process.env.NODE_ENV){
+    require('./mongodb/db.js');
+}
 
 const router = require('./routers/routers.js');
 

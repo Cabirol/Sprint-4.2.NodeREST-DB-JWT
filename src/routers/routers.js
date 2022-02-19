@@ -4,7 +4,7 @@ const {
     dateNow,
     rolld6,
     ratioUser
-} = require('../utils/date.js');
+} = require('../utils/utils.js');
 
 const {
     findUsers,
@@ -18,7 +18,7 @@ const {
     deleteGamesByUser,
     findGames,
     findGamesByUser
-} = require('../services/mongoservices.js');
+} = require(process.env.NODE_ENV ? '../mongodb/services.js' : '../mysql/services.js');
 
 const router = new express.Router();
 

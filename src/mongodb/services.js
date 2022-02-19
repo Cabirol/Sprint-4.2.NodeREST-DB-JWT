@@ -1,5 +1,5 @@
-const User = require('../models/user.js');
-const Game = require('../models/game.js');
+const User = require('./models/user.js');
+const Game = require('./models/game.js');
 
 const findUsers = () =>{
     return User.find();
