@@ -1,10 +1,8 @@
 //const db = require('direccio');
-
-const db = require("../../srcmysql/db/mysql");
-
 //const {Op} = require('sequelize');
-const findUsers = () =>{
-    return User.find();
+
+const findUsers = () =>{//
+    return db.User.findAll();
 }
 const findUserByName = (name)=>{//
     return db.User.findOne({where: {name} });
@@ -38,12 +36,12 @@ const deleteGamesByUser = (UserId) =>{//
     return db.Game.destroy({where: {UserId}});
 };
 
-const findGames = () => {
-    return Game.find();
+const findGames = () => {//
+    return db.Game.findAll();
 };
 
-const findGamesByUser = (UserId) =>{
-    return Game.find({UserId});
+const findGamesByUser = (UserId) =>{//
+    return db.Game.findAll({where:{UserId}});
 };
 
 

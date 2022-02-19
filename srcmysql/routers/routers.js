@@ -15,7 +15,7 @@ router.post('/players', async (req, res)=>{
     const isValidOperation = updates.every((update)=> allowedUpdates.includes(update));
 
     if(!isValidOperation){
-        return res.status(400).send({error: 'invalid fields'});
+        return res.status(400).json({error: 'invalid fields'});
     }
     try{
         if(!req.body.name || req.body.name === 'anon'){
@@ -23,14 +23,14 @@ router.post('/players', async (req, res)=>{
         }else{
             const existingUser = await db.User.findOne({where: {name: req.body.name} });
             if (existingUser){
-                return res.status(400).send({error: 'name already taken'});
+                return res.status(400).json({error: 'name already taken'});
             }
         }
         const newUser = db.User.build({name: req.body.name, regDate: dateNow()});
         await newUser.save();
-        res.status(201).send(newUser);
+        res.status(201).json(newUser);
     }catch(e){
-        res.status(400).send(e);
+        res.status(400).json(e);
     }
 
 });
@@ -40,9 +40,9 @@ router.get('/login', async (req, res)=>{
 try{
     console.log(db);
     const users = await db.User.create({name:"Dani"});
-    res.send(users);
+    res.json(users);
 }catch(e){
-    res.status(400).send(e);
+    res.status(400).json(e);
 }
     
 });
@@ -54,27 +54,26 @@ router.put('/players', async (req, res)=>{
     const isValidOperation = updates.every((update)=> allowedUpdates.includes(update));
 
     if(!isValidOperation){
-        return res.status(400).send({error: 'invalid updates'});
+        return res.status(400).json({error: 'invalid updates'});
     }
     if(!req.body.name || !req.body._id || req.body.name === 'anon'){
-        return res.status(400).send({error: 'missing name or id'});
+        return res.status(400).json({error: 'missing name or id'});
     }
     try{
         const user = await db.User.findOne({where: {_id:req.body._id}});
-        console.log(user);
 
         if (!user) {
-            return res.status(404).send({error: 'no user found'});
+            return res.status(404).json({error: 'no user found'});
         }
         const existingUser = await db.User.findOne({where:{name:req.body.name, [Op.not]: { _id: req.body._id }}});
         if (existingUser){
-            return res.status(400).send({error: 'name already taken'});
+            return res.status(400).json({error: 'name already taken'});
         }
         user.name = req.body.name;
         await user.save();
-        res.send(user);
+        res.json(user);
     }catch(e){
-        res.status(400).send(e);
+        res.status(400).json(e);
     }
     
 });
@@ -88,12 +87,12 @@ router.post('/players/:id/games', async (req, res)=>{
     try{
         const user = await db.User.findOne({where: {_id:req.params.id}});
         if (!user) {
-            return res.status(404).send({error: 'no user found'});
+            return res.status(404).json({error: 'no user found'});
         }
         await game.save();
-        res.status(201).send(game);
+        res.status(201).json(game);
     } catch(e){
-        res.status(400).send(e);     
+        res.status(400).json(e);     
     }
     
 });
@@ -102,12 +101,12 @@ router.delete('/players/:id/games', async (req, res)=>{
     try{
         const user = await db.User.findOne({where: {_id:req.params.id}});
         if (!user) {
-            return res.status(404).send({error: 'no user found'});
+            return res.status(404).json({error: 'no user found'});
         }
         const deleted = await db.Game.destroy({where: {UserId: req.params.id}});
         res.json(deleted);
     }catch(e){
-        res.status(500).send(e);
+        res.status(500).json(e);
     }
     
 });
@@ -115,13 +114,13 @@ router.delete('/players/:id/games', async (req, res)=>{
 router.get('/players', async (req, res)=>{
 
     try{
-        const users = await User.find();
+        const users = await db.User.findAll();
         if (users.length === 0) {
-            return res.status(404).send({error: 'no users found'});
+            return res.status(404).json({error: 'no users found'});
         }
         const ratios = [];
         for (const user of users){
-            const games = await Game.find({ UserId: user._id });
+            const games = await db.Game.findAll({where:{ UserId: user._id }});
             if (games.length === 0) {
                 ratios.push({_id:user._id, name:user.name, ratioWin:"No games played"});
             } else {
@@ -138,9 +137,9 @@ router.get('/players', async (req, res)=>{
                 ratios.push({_id:user._id, name:user.name, ratioWin:ratioUser});
             }
         }
-        res.status(201).send(ratios);
+        res.status(201).json(ratios);
     }catch(e){
-        res.status(500).send(e);
+        res.status(500).json(e);
     }
     
 });
@@ -148,14 +147,14 @@ router.get('/players', async (req, res)=>{
 router.get('/players/:id/games', async (req, res)=>{
 
 try{
-    const user = await User.findOne({_id:req.params.id});
+    const user = await db.User.findOne({where: {_id:req.params.id} });
         if (!user) {
-            return res.status(404).send({error: 'no user found'});
+            return res.status(404).json({error: 'no user found'});
         }
-    const games = await Game.find({UserId: req.params.id});
-    res.status(201).send(games);
+    const games = await db.Game.findAll({where:{ UserId: req.params.id }});
+    res.status(201).json(games);
 }catch(e){
-    res.status(500).send(e);
+    res.status(500).json(e);
 }
     
 });
@@ -164,9 +163,9 @@ try{
 router.get('/players/ranking', async (req, res)=>{
 
     try{
-        const games = await Game.find();
+        const games = await db.Game.findAll();
         if (games.length === 0) {
-            return res.status(404).send({error: 'No games played'});
+            return res.status(404).json({error: 'No games played'});
         }
         const turnouts = [];
         games.forEach((game)=>{
@@ -178,9 +177,9 @@ router.get('/players/ranking', async (req, res)=>{
             }
         });
         const ratioWin = 100 * turnouts.reduce((a, b) => a + b, 0)/turnouts.length;
-        res.status(201).send({ratioWin});
+        res.status(201).json({ratioWin});
     }catch(e){
-        res.status(500).send(e);
+        res.status(500).json(e);
     }
     
 });
@@ -188,14 +187,14 @@ router.get('/players/ranking', async (req, res)=>{
 router.get('/players/ranking/loser', async (req, res)=>{
 
     try{
-        const users = await User.find();
+        const users = await db.User.findAll();
         if (users.length === 0) {
-            return res.status(404).send({error: 'no users found'});
+            return res.status(404).json({error: 'no users found'});
         }
         let ratios = [];
         let min = 100;
         for (const user of users){
-            const games = await Game.find({ UserId: user._id });
+            const games = await db.Game.findAll({where:{UserId: user._id}});
             if (games.length !== 0) {
                 const turnoutsUser = [];
                 games.forEach((game)=>{
@@ -218,25 +217,25 @@ router.get('/players/ranking/loser', async (req, res)=>{
             }       
         }
         if (ratios.length === 0){
-            res.status(400).send({error: "no games played"});
+            res.status(400).json({error: "no games played"});
         }
-        res.status(201).send(ratios);
+        res.status(201).json(ratios);
     }catch(e){
-        res.status(500).send(e);
+        res.status(500).json(e);
     }
     
 });
 
 router.get('/players/ranking/winner', async (req, res)=>{
     try{
-        const users = await User.find();
+        const users = await db.User.findAll();
         if (users.length === 0) {
-            return res.status(404).send({error: 'no users found'});
+            return res.status(404).json({error: 'no users found'});
         }
         let ratios = [];
         let max = 0;
         for (const user of users){
-            const games = await Game.find({ UserId: user._id });
+            const games = await db.Game.findAll({where:{UserId: user._id}});
             if (games.length !== 0) {
                 const turnoutsUser = [];
                 games.forEach((game)=>{
@@ -258,11 +257,11 @@ router.get('/players/ranking/winner', async (req, res)=>{
             }       
         }
         if (ratios.length === 0){
-            res.status(400).send({error: "no games played"});
+            res.status(400).json({error: "no games played"});
         }
-        res.status(201).send(ratios);
+        res.status(201).json(ratios);
     }catch(e){
-        res.status(500).send(e);
+        res.status(500).json(e);
     }
 });
 
