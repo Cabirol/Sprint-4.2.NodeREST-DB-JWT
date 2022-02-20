@@ -77,7 +77,7 @@ S'ha de proporcionar l'id d'un jugador. Si el jugador no existeix, salta error. 
 
 ### GET /players/ranking: retorna el percentatge mig d’èxits del conjunt de tots els jugadors
 
-Calcula el percentatge d'exits respecte totes les partides jugades, sense tenir en compte qui les ha jugat. (No la mitjana d'exit d'entre tots els jugadors)
+Calcula el percentatge d'exits respecte totes les partides jugades, sense tenir en compte qui les ha jugat. (No la mitjana d'exit d'entre tots els jugadors).
 
 ### GET /players/ranking/loser: retorna el jugador amb pitjor percentatge d’èxit
 
