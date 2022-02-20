@@ -1,6 +1,6 @@
 const config = {
     user:"root",
-    password:"My/MuSiCa/90",
+    password:"123456",
     database:"jocdauscabirol",
     host:"localhost",
     port: 3306

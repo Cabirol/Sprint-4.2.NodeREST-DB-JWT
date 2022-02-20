@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Cabirol/Sprint-4.2.NodeREST-DB-JWT#readme",
   "dependencies": {
     "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.1",
     "mysql2": "^2.3.3",
     "sequelize": "^6.16.1"

@@ -1,4 +1,6 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const auth = require('../middlewares/auth.js');
 
 const {
     dateNow,
@@ -22,7 +24,30 @@ const {
 
 const router = new express.Router();
 
-router.post('/players', async (req, res)=>{
+router.post('/login', async (req, res)=>{
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['admin','password'];
+    const isValidOperation = updates.every((update)=> allowedUpdates.includes(update));
+    if(!isValidOperation){
+        return res.status(400).json({error: 'invalid fields'});
+    }
+
+    if(req.body.admin === 'admin' && req.body.password === '1234'){
+        const payload = {
+            check: true
+        };
+        const token = jwt.sign(payload, 'clausecreta');
+        res.status(200).json({
+            message: 'Successful authentification',
+            token
+        })
+    }else{
+        res.status(400).json({error: 'Unable to login'});
+    }
+        
+});
+
+router.post('/players', auth, async (req, res)=>{
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name'];
     const isValidOperation = updates.every((update)=> allowedUpdates.includes(update));
@@ -51,13 +76,7 @@ router.post('/players', async (req, res)=>{
 
 });
 
-router.post('/login', async (req, res)=>{
-
-res.json('prova');
-    
-});
-
-router.put('/players', async (req, res)=>{
+router.put('/players', auth, async (req, res)=>{
 
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', '_id'];
@@ -91,7 +110,7 @@ router.put('/players', async (req, res)=>{
     
 });
 
-router.post('/players/:id/games', async (req, res)=>{
+router.post('/players/:id/games', auth, async (req, res)=>{
     const newGame = newGameInstance(rolld6(), rolld6(), req.params.id);
 
     try{
@@ -109,7 +128,7 @@ router.post('/players/:id/games', async (req, res)=>{
     
 });
 
-router.delete('/players/:id/games', async (req, res)=>{
+router.delete('/players/:id/games', auth, async (req, res)=>{
     try{
         const user = await findUserById(req.params.id);
         if (!user) {
@@ -124,7 +143,7 @@ router.delete('/players/:id/games', async (req, res)=>{
     
 });
 
-router.get('/players', async (req, res)=>{
+router.get('/players', auth, async (req, res)=>{
 
     try{
         const users = await findUsers();
@@ -149,7 +168,7 @@ router.get('/players', async (req, res)=>{
     
 });
 
-router.get('/players/:id/games', async (req, res)=>{
+router.get('/players/:id/games', auth, async (req, res)=>{
 
     try{
         const user = await findUserById(req.params.id);
@@ -166,7 +185,7 @@ router.get('/players/:id/games', async (req, res)=>{
     
 });
 
-router.get('/players/ranking', async (req, res)=>{
+router.get('/players/ranking', auth, async (req, res)=>{
 
     try{
         const games = await findGames();
@@ -182,7 +201,7 @@ router.get('/players/ranking', async (req, res)=>{
     
 });
 
-router.get('/players/ranking/loser', async (req, res)=>{
+router.get('/players/ranking/loser', auth, async (req, res)=>{
 
     try{
         const users = await findUsers();
@@ -218,7 +237,7 @@ router.get('/players/ranking/loser', async (req, res)=>{
     
 });
 
-router.get('/players/ranking/winner', async (req, res)=>{
+router.get('/players/ranking/winner', auth, async (req, res)=>{
     try{
         const users = await findUsers();
         if (users.length === 0) {
